@@ -17,7 +17,7 @@ export default function init() {
 
   const urlParams = new URLSearchParams(window.location.search);
   const scene = new Scene();
-  scene.setupGrid(10.0, 10);
+  //scene.setupGrid(1.0, 10);
 
   const renderer = new GLRenderer(document.getElementById("canvas"), {
     debugGeomIds: false,
@@ -60,13 +60,41 @@ export default function init() {
 
   // renderer.solidAngleLimit = 0.0;
   renderer.setScene(scene);
-  renderer
-    .getViewport()
-    .getCamera()
-    .setPositionAndTarget(new Vec3(12, 12, 10), new Vec3(0, 0, 1.5));
+
+  /////////////////////////////////////////////////////////
+  // Choosing model and projection (Orthographic or Perspective)
+
+  //load default sample part
+  // let isOrtho = true;
+  // scene.setupGrid(1.0, 10);
+  // loadcadasset("./data/HC_SRO4.zcad", true);
+  
+  // large automobile assembly
+  let isOrtho = false;
+  scene.setupGrid(10.0, 10);
+  loadcadasset("./data/01 dipan/01 dipan.zcad", false);
+  loadcadasset("./data/02 dongli/02 dongli.zcad", false);
+  loadcadasset("./data/03 cheshen/03 cheshen.zcad", true);
+  loadcadasset("./data/04 fujian/04 fujian.zcad", false);
+  loadcadasset("./data/05 dianqi/05 dianqi.zcad", false);
+
+  // let isOrtho = true;
+  // scene.setupGrid(0.2, 10);
+  // loadcadasset("./data/hinge.zcad", true);
+  /////////////////////////////////////////////////////////
+  
+  let camera = renderer.getViewport().getCamera();
+  if (isOrtho) {
+    camera.setIsOrthographic(1, 40);
+    //camera.adjustNearAndFarPlanesToFocalDist = true
+    camera.nearDistFactor = -5 // 0.01
+    camera.farDistFactor = 5
+  } else {
+    camera.setPositionAndTarget(new Vec3(12,12,10), new Vec3(0,0,1.5))
+  }
 
   const envMap = new EnvMap();
-  envMap.load("../data/StudioG.zenv");
+  envMap.load("./data/StudioG.zenv");
   scene.setEnvMap(envMap);
 
   // Setup FPS Display
@@ -80,18 +108,22 @@ export default function init() {
   let highlightedItem;
   const highlightColor = new Color("#F9CE03");
   highlightColor.a = 0.1;
+
   const filterItem = (item) => {
     while (item && !(item instanceof CADBody)) item = item.getOwner();
     return item;
   };
+
   renderer.getViewport().on("pointerOverGeom", (event) => {
     highlightedItem = filterItem(event.intersectionData.geomItem);
     highlightedItem.addHighlight("pointerOverGeom", highlightColor, true);
   });
+
   renderer.getViewport().on("pointerLeaveGeom", (event) => {
     highlightedItem.removeHighlight("pointerOverGeom", true);
     highlightedItem = null;
   });
+
   renderer.getViewport().on("pointerDown", (event) => {
     if (event.intersectionData) {
       const geomItem = filterItem(event.intersectionData.geomItem);
@@ -182,15 +214,4 @@ export default function init() {
     // xfo.ori.setFromEulerAngles(new EulerAngles(90 * (Math.PI / 180), 0, 0));
     // asset.getParameter("GlobalXfo").setValue(xfo);
   }
-
-  //load default sample part
-  //loadcadasset("./data/HC_SRO4.zcad", false);
-
-  //uncomment to load large automobile assembly
-  loadcadasset("./data/01 dipan/01 dipan.zcad", false);
-  loadcadasset("./data/02 dongli/02 dongli.zcad", false);
-  loadcadasset("./data/03 cheshen/03 cheshen.zcad", true);
-  loadcadasset("./data/04 fujian/04 fujian.zcad", false);
-  loadcadasset("./data/05 dianqi/05 dianqi.zcad", false);
-
 }

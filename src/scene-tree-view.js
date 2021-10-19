@@ -89,9 +89,13 @@ class TreeItemView extends HTMLElement {
    */
   setTreeItem(treeItem, appData) {
     this.treeItem = treeItem;
-
     this.appData = appData;
 
+    const numChildren = treeItem.getNumChildren();
+    if (numChildren == 0)
+      return;
+
+    
     // Name
     this.titleElement.textContent = treeItem.getName();
     const updateName = () => {
@@ -192,10 +196,7 @@ class TreeItemView extends HTMLElement {
     if (hilighted) {
       const highlightColor = this.treeItem.getHighlight();
       const bgColor = highlightColor.lerp(new Color(0.75, 0.75, 0.75, 0), 0.5);
-      this.titleElement.style.setProperty(
-        "border-color",
-        highlightColor.toHex()
-      );
+      this.titleElement.style.setProperty("border-color", highlightColor.toHex());
       this.titleElement.style.setProperty("background-color", bgColor.toHex());
     } else {
       this.titleElement.style.removeProperty("border-color");
@@ -249,17 +250,18 @@ class TreeItemView extends HTMLElement {
    */
   addChild(treeItem, index) {
     if (this.expanded) {
+      
+      // const numChildren = treeItem.getNumChildren();
+      // if (numChildren == 0)
+      //   return;
+  
       const childTreeItem = document.createElement("tree-item-view");
       childTreeItem.setTreeItem(treeItem, this.appData);
 
-      if (index == this.itemChildren.childElementCount) {
+      if (index == this.itemChildren.childElementCount)
         this.itemChildren.appendChild(childTreeItem);
-      } else {
-        this.itemChildren.insertBefore(
-          childTreeItem,
-          this.itemChildren.children[index]
-        );
-      }
+      else
+        this.itemChildren.insertBefore(childTreeItem, this.itemChildren.children[index]);
     } else {
       this.collapse();
     }
@@ -422,7 +424,10 @@ class SceneTreeView extends HTMLElement {
 
     // Init root tree item
     this.treeItemView = document.createElement("tree-item-view");
+    //let start = performance.now();
     this.treeContainer.appendChild(this.treeItemView);
+    //let end = performance.now();
+    //console.log("TreeView load time: ", end - start);
 
     this.__onKeyDown = this.__onKeyDown.bind(this);
     this.__onMouseEnter = this.__onMouseEnter.bind(this);
@@ -438,6 +443,11 @@ class SceneTreeView extends HTMLElement {
    * @param {object} appData App data.
    */
   setTreeItem(treeItem, appData) {
+    //const isBody = treeItem instanceof CADBody;
+    const numChildren = treeItem.getNumChildren();
+    if (numChildren == 0)
+      return;
+
     this.rootTreeItem = treeItem;
     this.appData = appData;
     this.treeItemView.setTreeItem(treeItem, appData);
