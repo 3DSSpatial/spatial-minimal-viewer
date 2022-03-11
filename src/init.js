@@ -283,21 +283,6 @@ export default function init() {
     })
   }
 
-    //comment the following code if you want to load via URL params or the drop zone
-    //if (dropZone) dropZone.hide()
-    //load default sample part
-    //loadCADAsset("./data/HC_SRO4.zcad", "HC_SRO4.zcad", true);
-  
-    //load default sample part
-    loadCADAsset("./data/PressRink.zcad", "PressRink.zcad", true);
-  
-    //uncomment to load large automobile assembly
-    // loadCADAsset("./data/01 dipan/01 dipan.zcad", "01 dipan.zcad", false);
-    // loadCADAsset("./data/02 dongli/02 dongli.zcad", "02 dongli.zcad", false);
-    // loadCADAsset("./data/03 cheshen/03 cheshen.zcad", "03 cheshen.zcad", true);
-    // loadCADAsset("./data/04 fujian/04 fujian.zcad", "04 fujian.zcad", false);
-    // loadCADAsset("./data/05 dianqi/05 dianqi.zcad", "05 dianqi.zcad", false);
-
   // const xfo = new Xfo();
   // xfo.ori.setFromEulerAngles(new EulerAngles(90 * (Math.PI / 180), 0, 0));
   // asset.getParameter("GlobalXfo").setValue(xfo);
