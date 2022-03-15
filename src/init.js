@@ -38,6 +38,7 @@ export default function init() {
   renderer.setScene(scene)
   renderer.getViewport().getCamera().setPositionAndTarget(new Vec3(12, 12, 10), new Vec3(0, 0, 1.5))
 
+  // Set env map
   const envMap = new EnvMap()
   envMap.load('./data/StudioG.zenv')
   scene.setEnvMap(envMap)
@@ -46,22 +47,20 @@ export default function init() {
     scene,
     renderer,
   }
-  /*
-      Change the Background color
-  */
-/*       const color = new Color('#7460e1') // this is equivalent to: new Color(116/255, 96/255, 225/255)
-      // get the settings of the scene.
-      const settings = scene.getSettings()
-      // get the "BackgroundColor" parameter and set the value to our color.
-      settings.getParameter('BackgroundColor').setValue(color)
- */          
+
+  //    Change the Background color
+  //const color = new Color('#7460e1') // this is equivalent to: new Color(116/255, 96/255, 225/255)
+  //const settings = scene.getSettings() // getSettings not defined???
+  //settings.getParameter('BackgroundColor').setValue(color)
+
   /*
     Change Camera Manipulation mode
+    Turntable, Tumbler or Trackball
   */
   renderer
     .getViewport()
     .getManipulator()
-    .setDefaultManipulationMode(CameraManipulator.MANIPULATION_MODES.turntable);
+    .setDefaultManipulationMode(CameraManipulator.MANIPULATION_MODES.trackball);
 
   // Setup Selection Manager
   const selectionColor = new Color('#F9CE03')
@@ -229,13 +228,24 @@ export default function init() {
         return true
       })
 
+      const assetName = asset.getName()
+      console.log('Loaded asset name :' + assetName)
+
+      // For demo purpose: rotate Pinki on load so it looks upright
+      if (assetName == 'Full_na_stalcima') {
+        const xfo = new Xfo();
+        xfo.ori.setFromEulerAngles(new EulerAngles(90 * (Math.PI / 180), 0, 0));
+        asset.getParameter("GlobalXfo").setValue(xfo);
+      }
+
       renderer.frameAll()
     })
     asset.getGeometryLibrary().on('loaded', () => {
       calcSceneComplexity()
-    })
+       })
     scene.getRoot().addChild(asset)
- }
+
+   }
 
   const loadGLTFAsset = (url, filename) => {
     const { GLTFAsset } = gltfLoader
@@ -282,8 +292,4 @@ export default function init() {
       loadAsset(url, filename)
     })
   }
-
-  // const xfo = new Xfo();
-  // xfo.ori.setFromEulerAngles(new EulerAngles(90 * (Math.PI / 180), 0, 0));
-  // asset.getParameter("GlobalXfo").setValue(xfo);
 }
